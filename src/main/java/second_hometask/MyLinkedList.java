@@ -3,7 +3,7 @@ package second_hometask;
 import java.util.Collection;
 import java.util.Iterator;
 
-public class MyLinkedList implements Collection<Node>, Iterable<Node>{
+public class MyLinkedList implements Collection<Node>{
 Node head;
 Node last;
 int size;
@@ -64,7 +64,6 @@ int size;
             }
         };
         return itr;
-
     }
 
     public Object[] toArray() {
@@ -120,6 +119,7 @@ int size;
                 now.name=null;
                 now.after=null;
                 now.before=null;
+                size--;
                 return true;
             }
             now=now.after;
@@ -136,12 +136,6 @@ int size;
           if (!this.contains(slist[i]))
               return false;
         }
-        /*// ещё как вариант
-        Iterator<?> itr = c.iterator();
-        while (itr.hasNext()) {
-            if (!this.contains((Node)itr.next()))
-                return false;
-        } */
         return true;
     }
 
@@ -162,17 +156,17 @@ int size;
         Node now;
         while (itr.hasNext()){
             now=(Node)itr.next();
-            result = result||this.remove(now); // если хоть один удалил значит result=true
+            result = this.remove(now)||result; // если хоть один удалил значит result=true
         }
         return result;
     }
 
     public boolean retainAll(Collection<?> c) {
         boolean result=false;
-        Node now=head, del, nowC;
+        Node del, nowC;
         Node next;
         boolean retain;
-        while (now!=null) {
+        for (Node now: this){
             Iterator<?> itr = c.iterator();
             retain=false;
             while (itr.hasNext()) {
@@ -182,12 +176,13 @@ int size;
                     break;
                 }
             }
-            del=now;
+            if (!retain) {
+                del = now;
+                result = this.remove(del)||result; // если хоть один удалил значит result=true
+            }
             now = now.after;
-            result = result||this.remove(del); // если хоть один удалил значит result=true
         }
         return result;
-
     }
 
     public void clear() {
@@ -201,25 +196,32 @@ int size;
             now = next;
         }
         head=null;
+        last=null;
         size=0;
     }
-  public void print(){
-      Node now=head;
-      while (now!=null){
-          System.out.println(now.getName());
-          now=now.after;
-      }
 
-  }
+    public void print(){
+        if (isEmpty()) System.out.print("Список пуст!");
+        else   // заодно здесь проверка итератора
+          for (Node now: this) System.out.print(now.getName()+" ");
+        System.out.println();
+    }
+
     public static void main(String[] args){
         MyLinkedList list=new MyLinkedList();
         for (int i=0;i<10;i++){
             list.add(new Node("элемент:"+Integer.toString(i)));
         }
+        System.out.println("Заполненный список");
+        list.print();
+
         Object[] slist = list.toArray();
+        System.out.println("Массив toArray()");
         for(int i=0; i<slist.length; i++) {
-            System.out.println(((Node)(slist[i])).getName());
+            System.out.print(((Node)(slist[i])).getName()+" ");
         }
+        System.out.println();
+
         list.remove(slist[6]);
         list.remove(slist[0]);
         System.out.println("После удаления элементов 0 и 6");
@@ -231,10 +233,14 @@ int size;
 
         System.out.println("новый список");
         ((MyLinkedList) c).print();
-        System.out.println(list.containsAll(c));
+        System.out.println("containsAll:"+list.containsAll(c));
 
-        System.out.println("Итератор:");
-        for (Node now: list) System.out.print(now.getName()+" "); // проверка работы итератора
+        System.out.println("Сохранить все");
+        System.out.println("retainALL:"+list.retainAll(list));
+        list.print();
 
+        System.out.println("Сохранить несуществующие");
+        System.out.println("retainALL:"+list.retainAll(c));
+        list.print();
     }
 }

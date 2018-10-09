@@ -1,6 +1,5 @@
 package second_hometask;
 
-
 import java.util.*;
 
 public class Node {
@@ -27,6 +26,5 @@ public class Node {
            this.before.equals(node.before) &&
            this.after.equals(node.after);
   }
-
 }
 
