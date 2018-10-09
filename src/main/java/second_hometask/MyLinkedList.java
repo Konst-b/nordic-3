@@ -40,9 +40,31 @@ int size;
         }
         return false;
     }
-
+    @Override
     public Iterator<Node> iterator() {
-        return null;
+        Iterator<Node> itr = new Iterator<Node>() {
+
+            private Node curr = head, now;
+
+            @Override
+            public boolean hasNext() {
+                return curr != null;
+            }
+
+            @Override
+            public Node next() {
+                now=curr;
+                curr=curr.after;
+                return now;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+        return itr;
+
     }
 
     public Object[] toArray() {
@@ -55,10 +77,17 @@ int size;
         return array;
     }
 
-    public <T> T[] toArray(T[] a) {
-
-        return null;
-    }
+   public <T> T[] toArray(T[] a) { //выгружает список в массив a[] - столько сколько влезет
+       Node now=this.head;
+       int i=0;
+       while (now!=null){
+           if (i<a.length) a[i] = (T)now;
+           else break;
+           now=now.after;
+           i++;
+       }
+       return a;
+   }
 
     public boolean add(Node node) {
         if (this.isEmpty()) {
@@ -104,22 +133,61 @@ int size;
 
         Object[] slist =c.toArray();
         for(int i=0; i<slist.length; i++){
-          if (this.contains(slist[i])==false)
+          if (!this.contains(slist[i]))
               return false;
         }
+        /*// ещё как вариант
+        Iterator<?> itr = c.iterator();
+        while (itr.hasNext()) {
+            if (!this.contains((Node)itr.next()))
+                return false;
+        } */
         return true;
     }
 
     public boolean addAll(Collection<? extends Node> c) {
-        return false;
+        boolean result=true;
+        Iterator<? extends Node> itr = c.iterator();
+        Node now;
+        while (itr.hasNext()){
+           now=itr.next();
+           result = result||this.add(now);
+        }
+        return result;
     }
 
     public boolean removeAll(Collection<?> c) {
-        return false;
+        boolean result=false;
+        Iterator<?> itr = c.iterator();
+        Node now;
+        while (itr.hasNext()){
+            now=(Node)itr.next();
+            result = result||this.remove(now); // если хоть один удалил значит result=true
+        }
+        return result;
     }
 
     public boolean retainAll(Collection<?> c) {
-        return false;
+        boolean result=false;
+        Node now=head, del, nowC;
+        Node next;
+        boolean retain;
+        while (now!=null) {
+            Iterator<?> itr = c.iterator();
+            retain=false;
+            while (itr.hasNext()) {
+                nowC = (Node) itr.next();
+                if (now.equals(nowC)) {
+                    retain=true;
+                    break;
+                }
+            }
+            del=now;
+            now = now.after;
+            result = result||this.remove(del); // если хоть один удалил значит result=true
+        }
+        return result;
+
     }
 
     public void clear() {
@@ -158,22 +226,15 @@ int size;
         list.print();
 
         Collection c=new MyLinkedList();
-        //c.add(slist[2]);
-        //c.add(slist[3]);
         c.add(new Node("FF"));
         c.add(new Node("DD"));
-        c.add(slist[3]);
+
         System.out.println("новый список");
         ((MyLinkedList) c).print();
         System.out.println(list.containsAll(c));
-        System.out.println("ничего не делал :((");
-        list.print();
 
-        /*Iterator<Node> iter = list.iterator();
-        while(iter.hasNext()){
-            System.out.println(iter.next());*/
-
-
+        System.out.println("Итератор:");
+        for (Node now: list) System.out.print(now.getName()+" "); // проверка работы итератора
 
     }
 }

@@ -28,9 +28,5 @@ public class Node {
            this.after.equals(node.after);
   }
 
-  /*@Override
-  public int hashCode() {
-    return Object.hash(name, before, after);
-  }*/
 }
 
