@@ -1,7 +1,7 @@
     package second_hometask;
 
-    public class Node<T> {
-        T content;
+    public class Node<T>  implements Comparable<T> {
+        public T content;
         Node<T> before;
         Node<T> after;
 
@@ -22,6 +22,12 @@
             if (!(o instanceof Node)) return false;
             Node<T> node = (Node<T>) o;
             return this.content.equals(node.content);
+        }
+
+        public int compareTo(Object o) {
+            T t=(T)o;
+            return this.content.toString().compareTo(t.toString());
+
         }
     }
 
